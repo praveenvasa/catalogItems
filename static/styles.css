@@ -43,13 +43,6 @@ body {
 	font-size: 22px;
 }
 
-footer {
-	border-top: 2px solid gray;
-	padding-top: 5px;
-	text-align: right;
-	bottom: 0;
-}
-
 .flash {
 	text-align: center;
 	color: red;
@@ -106,11 +99,6 @@ footer {
 .logo {
 	float: left;
 	padding-left: 30px;
-}
-
-.loginpage {
-	text-align: center;
-	min-height: 550px;
 }
 
 .maxheight {
