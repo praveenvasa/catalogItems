@@ -14,11 +14,12 @@ header {
 	text-align: center;
 	border-bottom: 2px solid gray;
 	padding: 15px;
+	background-color: #3196af;
 }
 
 nav {
 	float: left;
-	max-width: 250px;
+	max-width: 300px;
 	margin: 0;
 	padding: 1em;
 	border-right: 2px solid gray;
@@ -31,16 +32,11 @@ article {
 }
 
 body {
-	position: absolute;
 	left: 10%;
 	right: 10%;
-	border: 2px solid;
-	border-radius: 25px;
-	padding: 5px;
-	margin: 5px;
-	border-color: #999999;
 	font-family: 'Advent Pro';
 	font-size: 22px;
+	background-color: #a4dfee;
 }
 
 .flash {
@@ -94,11 +90,6 @@ body {
 
 .login {
 	float: right;
-}
-
-.logo {
-	float: left;
-	padding-left: 30px;
 }
 
 .maxheight {
