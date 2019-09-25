@@ -8,7 +8,7 @@ Features
 Proper authentication and authorisation check.
 Full CRUD support using SQLAlchemy and Flask.
 JSON endpoints.
-Implements oAuth using Google Sign-in API.
+Implements oAuth using Google Sign-in API and Facebook API.
 
 Steps to run this project
 Download and install Vagrant.
