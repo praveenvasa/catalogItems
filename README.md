@@ -1,16 +1,16 @@
-Item Catalog Project
+#Item Catalog Project
 An Udacity Full Stack Web Developer II Nanodegree project developed by Praveen Vasa.
 
-About
+#About
 This application provides a list of items within a variety of categories as well as provide a user registration and authentication system. Registered users will have the ability to post, edit, and delete their own items.
 
-Features
+#Features
 Proper authentication and authorisation check.
 Full CRUD support using SQLAlchemy and Flask.
 JSON endpoints.
 Implements oAuth using Google Sign-in API and Facebook API.
 
-Steps to run this project
+#Steps to run this project
 Download and install Vagrant.
 
 Download and install VirtualBox.
@@ -31,16 +31,16 @@ Type cd /vagrant/ to navigate to the shared repository.
 
 Download or clone this repository, and navigate to it.
 
-Install or upgrade Flask:
+#Install or upgrade Flask:
 
 sudo python3 -m pip install --upgrade flask
-Set up the database:
+#Set up the database:
 
 python3 catalog_database_setup.py
-Insert dummy values. If you don't run this, the application might not run.
+#Insert dummy values. If you don't run this, the application might not run.
 
 python3 lotofitems.py
-Run this application:
+#Run this application:
 
 python3 project.py
 Open http://localhost:8000/ in your favourite Web browser, and enjoy.
