@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template
+from flask import request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
-from catalog_database_setup import Base, catalogCategories, catalogItems, catalogUser
+from catalog_database_setup import Base, catalogCategories
+from catalog_database_setup import catalogItems, catalogUser
 from flask import session as login_session
 import random
 import string
@@ -21,7 +23,8 @@ APPLICATION_NAME = "Restaurant Menu Application"
 
 
 # Connect to Database and create database session
-engine = create_engine('sqlite:///catalog_app.db', connect_args={'check_same_thread': False})
+engine = create_engine(
+    'sqlite:///catalog_app.db', connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -47,24 +50,29 @@ def fbconnect():
     access_token = request.data
     print "access token received %s " % access_token
 
-    app_id = json.loads(open('fb_client_secrets.json', 'r').read())['web']['app_id']
+    app_id = json.loads(
+        open('fb_client_secrets.json', 'r').read())['web']['app_id']
     app_secret = json.loads(
         open('fb_client_secrets.json', 'r').read())['web']['app_secret']
-    url = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=%s&client_secret=%s&fb_exchange_token=%s' % (
-        app_id, app_secret, access_token)
+    url = ('https://graph.facebook.com/oauth/access_token?'
+           'grant_type=fb_exchange_token&client_id=%s&client_secret=%s&'
+           'fb_exchange_token=%s' % (app_id, app_secret, access_token))
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
 
     # Use token to get user info from API
     # userinfo_url = "https://graph.facebook.com/v2.8/me"
-    ''' Due to the formatting for the result from the server token exchange we have to
-        split the token first on commas and select the first index which gives us the key : value
-        for the server access token then we split it on colons to pull out the actual token value
-        and replace the remaining quotes with nothing so that it can be used directly in the graph
-        api calls'''
+    ''' Due to the formatting for the result from the server
+        token exchange we have to split the token first on
+        commas and select the first index which gives us the
+        key : value for the server access token then we split
+        it on colons to pull out the actual token value and replace
+        the remaining quotes with nothing so that it can be used
+        directly in the graph api calls'''
     token = result.split(',')[0].split(':')[1].replace('"', '')
 
-    url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % token
+    url = ('https://graph.facebook.com/v2.8/me?'
+           'access_token=%s&fields=name,id,email' % token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     # print "url sent for API access:%s"% url
@@ -79,7 +87,8 @@ def fbconnect():
     login_session['access_token'] = token
 
     # Get user picture
-    url = 'https://graph.facebook.com/v2.8/me/picture?access_token=%s&redirect=0&height=200&width=200' % token
+    url = ('https://graph.facebook.com/v2.8/me/picture?'
+           'access_token=%s&redirect=0&height=200&width=200' % token)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -99,7 +108,8 @@ def fbconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;\
+                  -webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
 
     flash("Now logged in as %s" % login_session['username'])
     return output
@@ -110,7 +120,8 @@ def fbdisconnect():
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
-    url = 'https://graph.facebook.com/%s/permissions?access_token=%s' % (facebook_id, access_token)
+    url = ('https://graph.facebook.com/%s/permissions?'
+           'access_token=%s' % (facebook_id, access_token))
     h = httplib2.Http()
     result = h.request(url, 'DELETE')[1]
     return "you have been logged out"
@@ -168,8 +179,8 @@ def gconnect():
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -202,7 +213,8 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;\
+                  -webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -214,7 +226,8 @@ def createUser(login_session):
                    'email'], picture=login_session['picture'])
     session.add(newUser)
     session.commit()
-    user = session.query(catalogUser).filter_by(email=login_session['email']).one()
+    user = session.query(
+        catalogUser).filter_by(email=login_session['email']).one()
     return user.id
 
 
@@ -227,7 +240,7 @@ def getUserID(email):
     try:
         user = session.query(catalogUser).filter_by(email=email).one()
         return user.id
-    except:
+    except Exception:
         return None
 
 
@@ -245,11 +258,13 @@ def gdisconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] == '200':
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response = make_response(
+            json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(
+            json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -279,15 +294,19 @@ def disconnect():
 
 @app.route('/catalog/<int:categories_id>/JSON')
 def categoryJSON(categories_id):
-    categories = session.query(catalogCategories).filter_by(id=categories_id).one()
-    items = session.query(catalogItems).filter_by(categories_id=categories.id)
+    categories = session.query(
+        catalogCategories).filter_by(id=categories_id).one()
+    items = session.query(
+        catalogItems).filter_by(categories_id=categories.id)
     return jsonify(CategoryItem=[i.serialize for i in items])
 
 
 @app.route('/catalog/<int:categories_id>/<int:items_id>/JSON')
 def itemJSON(categories_id, items_id):
-    categories = session.query(catalogCategories).filter_by(id=categories_id).one()
-    items = session.query(catalogItems).filter_by(id=items_id).one()
+    categories = session.query(
+        catalogCategories).filter_by(id=categories_id).one()
+    items = session.query(
+        catalogItems).filter_by(id=items_id).one()
     return jsonify(ItemDetails=[items.serialize])
 
 
@@ -311,11 +330,11 @@ def showCatalog():
     items = session.query(catalogItems).order_by(
         catalogItems.id.desc()).limit(10)
     if 'username' not in login_session:  # make sure user has logined
-        return render_template('publiccatalog.html', categories=categories,
-                               items=items)
+        return render_template(
+            'publiccatalog.html', categories=categories, items=items)
     else:  # if user logined, able to access create a new item
-        return render_template('catalog.html', categories=categories,
-                               items=items)
+        return render_template(
+            'catalog.html', categories=categories, items=items)
 
 
 # Create new item
@@ -339,8 +358,10 @@ def newItem():
 @app.route('/catalog/<int:categories_id>')
 def showCategories(categories_id):
     allcategories = session.query(catalogCategories).all()
-    categories = session.query(catalogCategories).filter_by(id=categories_id).one()
-    items = session.query(catalogItems).filter_by(categories_id=categories.id)
+    categories = session.query(
+        catalogCategories).filter_by(id=categories_id).one()
+    items = session.query(
+        catalogItems).filter_by(categories_id=categories.id)
     return render_template('category.html', categories=categories, items=items,
                            allcategories=allcategories)
 
@@ -348,7 +369,8 @@ def showCategories(categories_id):
 # Show the specific item and the description of it
 @app.route('/catalog/<int:categories_id>/<int:items_id>')
 def showItem(categories_id, items_id):
-    categories = session.query(catalogCategories).filter_by(id=categories_id).one()
+    categories = session.query(
+        catalogCategories).filter_by(id=categories_id).one()
     items = session.query(catalogItems).filter_by(id=items_id).one()
     if 'username' not in login_session or \
             items.user_id != login_session['user_id']:

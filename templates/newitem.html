@@ -4,11 +4,11 @@
 <form action="{{url_for('newItem')}}"
   method="POST">
   <p>Name:</p>
-  <input type="text" size="30" name="name">
+  <input type="text" size="30" name="name" required>
   <p>description:</p>
-  <input type="text" size="30" name="description">
+  <input type="text" size="30" name="description" required>
   <p>Film genres:</p>
-  <select name="categories_id">
+  <select name="categories_id" required>
     <option value=1 >Action Films</option>
     <option value=2 >Adventure Films</option>
     <option value=3 >Comedy Films</option>

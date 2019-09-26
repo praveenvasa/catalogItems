@@ -1,7 +1,7 @@
-  
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from catalog_database_setup import Base, catalogCategories, catalogItems, catalogUser
+from catalog_database_setup import Base, catalogCategories
+from catalog_database_setup import catalogItems, catalogUser
 
 # Create database and create a shortcut for easier to update database
 engine = create_engine('sqlite:///catalog_app.db')
